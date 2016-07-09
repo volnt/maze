@@ -23,16 +23,17 @@ class Maze(object):
         maze = defaultdict(list)
         solution = None
         stack = [(0, 0)]
+        full_stack = set((0, 0))
 
         while stack:
             x, y = stack[-1]
 
             if (x, y) == (self.width - 1, self.height - 1):
-                solution = len(stack)
+                solution = len(stack) - 1
 
-            # Pick only the sides inside the maze and with less than two open doors
+            # Pick only the sides inside the maze and on which we have not stepped yet
             sides = [(_x, _y) for _x, _y in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
-                     if _x >= 0 and _y >= 0 and _x < self.width and _y < self.height and len(maze[(_x, _y)]) < 2]
+                     if _x >= 0 and _y >= 0 and _x < self.width and _y < self.height and (_x, _y) not in full_stack]
 
             # If there is no such side, pop the stack and keep looking and we're back at the start
             if not sides:
@@ -46,6 +47,7 @@ class Maze(object):
 
             # Add the picked side to the stack
             stack.append(side)
+            full_stack.add(side)
 
         return maze, solution
 
